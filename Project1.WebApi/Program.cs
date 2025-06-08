@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Project1.Database.Models;
+using Project1.Domain.Features;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDbContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("Database")));
+builder.Services.AddScoped<Personservices>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
