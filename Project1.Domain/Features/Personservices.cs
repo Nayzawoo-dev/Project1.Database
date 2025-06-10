@@ -20,53 +20,138 @@ namespace Project1.Domain.Features
 
         public ResponseModels GetPersons()
         {
-            var list = _dbcontext.TblWindows.ToList();
-            var result = new ResponseModels(true, "All Data", list);
-            return result;
+            try
+            {
+                var list = _dbcontext.TblWindows.ToList();
+                var result = new ResponseModels(true, "All Data", list);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+            }
         }
 
         public ResponseModels GetPersons(int id)
         {
-            var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
-            if (list == null)
+            try
             {
-                var result = new ResponseModels(false, "Person Not Found");
+                var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
+                if (list == null)
+                {
+                    var result = new ResponseModels(false, "Person Not Found");
+                }
+                var res = new ResponseModels(true, "Person Found", list);
+                return res;
             }
-            var res = new ResponseModels(true, "Person Found", list);
-            return res;
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+
+
+            }
         }
 
-        public ResponseModels CreatePerson(TblWindow window)
+        public ResponseModels GetPersons(int pageNo, int pageSize)
         {
-            var res = _dbcontext.TblWindows.Add(window);
-            _dbcontext.SaveChanges();
-            var result = new ResponseModels(true, "Create Successful", res);
-            return result;
+            try
+            {
+                var list = _dbcontext.TblWindows.Skip((pageNo - 1) * pageSize).Take(pageSize).ToList();
+                return new ResponseModels(true, "Person List", list);
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+
+            }
+        }
+
+        public ResponseModels PostPerson(TblWindow window)
+        {
+            try
+            {
+                var res = _dbcontext.TblWindows.Add(window);
+                _dbcontext.SaveChanges();
+                return new ResponseModels(true, "Post Successful");
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+            }
         }
 
         public ResponseModels UpdateCreatePerson(TblWindow window, int id)
         {
-            var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
-            if (list == null)
+            try
             {
-                if(window.UserName.isNull() && window.Password.isNull())
+                var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
+                if (list == null)
                 {
-                    return new ResponseModels(false, "No Field To Post");
+                    if (window.UserName.isNull() && window.Password.isNull())
+                    {
+                        return new ResponseModels(false, "No Field To Post");
+                    }
+                    _dbcontext.TblWindows.Add(window);
+                    _dbcontext.SaveChanges();
+                    return new ResponseModels(true, "Post Complete", list);
                 }
-                _dbcontext.TblWindows.Add(window);
+                if (window.UserName.isNull() && window.Password.isNull())
+                {
+                    return new ResponseModels(true, "No Field To Update");
+                }
+                list.UserName = window.UserName;
+                list.Password = window.Password;
                 _dbcontext.SaveChanges();
-                return new ResponseModels(true, "Post Complete",list);
-            }
-            if (window.UserName.isNull() && window.Password.isNull())
-            {
-                return new ResponseModels(true, "No Field To Update");
-            }
-            list.UserName = window.UserName;
-            list.Password = window.Password;
-            _dbcontext.TblWindows.Add(window);
-            _dbcontext.SaveChanges();
-            return new ResponseModels(false, "Update Complete",list);
+                return new ResponseModels(true, "Update Complete", list);
 
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+            }
+
+        }
+
+        public ResponseModels UpdatePerson(TblWindow window, int id)
+        {
+            try
+            {
+                var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
+                if (list == null)
+                {
+                    return new ResponseModels(false, "Person Not Found");
+                }
+                list.UserName = window.UserName;
+                list.Password = window.Password;
+                _dbcontext.SaveChanges();
+                return new ResponseModels(true, "Update Successful", list);
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+            }
+
+        }
+
+        public ResponseModels DeletePerson(int id)
+        {
+            try
+            {
+                var list = _dbcontext.TblWindows.Where(x => x.Id == id).FirstOrDefault();
+                if (list == null)
+                {
+                    return new ResponseModels(false, "Person Not Found");
+                }
+                var result = _dbcontext.TblWindows.Remove(list);
+                _dbcontext.SaveChanges();
+                return new ResponseModels(true, "Delete Successful");
+
+            }
+            catch (Exception ex)
+            {
+                return new ResponseModels(false, ex.ToString());
+            }
         }
     }
 }
