@@ -16,11 +16,28 @@ namespace Project2Api.Controllers
 
         }
 
-        [HttpPost]
-        public IActionResult Post([FromBody] TblBlogDetail detail)
+        [HttpGet]
+        public IActionResult GetDream()
         {
-            var res = _blogServices.PostBlogDetail(detail);
-            return Ok(res);
+            var result = _blogServices.GetDream();
+            return Ok(result);
         }
+
+        [HttpGet("{id}")]
+
+        public IActionResult GetDream(int id)
+        {
+            var result = _blogServices.GetDream(id);
+            return Ok(result);
+        }
+
+
+
+        //[HttpPost]
+        //public IActionResult Post([FromBody] TblBlogDetail detail)
+        //{
+        //    var res = _blogServices.PostBlogDetail(detail);
+        //    return Ok(res);
+        //}
     }
 }

@@ -10,9 +10,12 @@ namespace Prj2Services.Models
     {
         public bool Success { get; set; }
         public string Message { get; set; } 
-        public ResponseModel(bool success,string message) {
+
+        public object Data { get; set; }    
+        public ResponseModel(bool success,string message,object obj = null) {
             Success = success;
             Message = message;
+            Data = obj;
         }
     }
 }

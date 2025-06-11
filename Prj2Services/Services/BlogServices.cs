@@ -18,6 +18,18 @@ namespace Prj2Services.Services
             _appDbContext = appDbContext;
         }
 
+        public ResponseModel GetDream()
+        {
+            var list = _appDbContext.TblBlogHeaders.ToList();
+            return new ResponseModel(true, "Dream List",list);
+        }
+
+        public ResponseModel GetDream(int id)
+        {
+            var list = _appDbContext.TblBlogDetails.Where(x => x.BlogId == id);
+            return new ResponseModel(true, "Dream List", list);
+        }
+
         public ResponseModel PostBlogHeader(TblBlogHeader header)
         {
             string str = File.ReadAllText("DreamDictionary.json");
