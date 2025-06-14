@@ -15,5 +15,5 @@ public partial class TblTransaction
 
     public decimal Amount { get; set; }
 
-    public DateOnly TransactionDate { get; set; }
+    public DateTime TransactionDate { get; set; }
 }
