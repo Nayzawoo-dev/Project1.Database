@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Project5Database.Models;
 
 namespace Project5Api.UCSH.RollCallHistory
@@ -35,8 +37,39 @@ namespace Project5Api.UCSH.RollCallHistory
             return Ok(model);
         }
 
+        [HttpGet("{RollNo}")]
+        public IActionResult Get(string RollNo)
+        {
+            RollCallHistroyResponseModel model;
+            var res = _context.TblStudents.Where(x => x.RollNo == RollNo).FirstOrDefault();
+            if (res is null)
+            {
+                model = new RollCallHistroyResponseModel
+                {
+                    Message = "Your Student is not register"
+                };
+                goto Results;
+            }
+            var list = _context.TblAttendendHistories.Where(x => x.RollNo == RollNo).ToList();
+            var lst = list.Select(x => new RollCallHistoryList
+            {
+                Name = x.Name,
+                RollNo = x.RollNo,
+                DateTime = x.DateTime,
+            }).ToList();
+            model = new RollCallHistroyResponseModel
+            {
+                Success = true,
+                Message = "This is list",
+                rollCallHistoryLists = lst
+            };
+        Results:
+            return Ok(model);
+        }
+
+
         [HttpPost("RollCallWithRollNo")]
-        public IActionResult Get(RollCallHistroyRequestModel requestModel)
+        public  IActionResult Get(RollCallHistroyRequestModel requestModel)
         {
             RollCallHistroyResponseModel model;
             if (string.IsNullOrEmpty(requestModel.RollNo))
@@ -48,7 +81,7 @@ namespace Project5Api.UCSH.RollCallHistory
                 goto Results;
             }
             var list = _context.TblStudents.Where(x => x.RollNo == requestModel.RollNo).FirstOrDefault();
-            if(list is null)
+            if (list is null)
             {
                 model = new RollCallHistroyResponseModel
                 {
@@ -64,7 +97,7 @@ namespace Project5Api.UCSH.RollCallHistory
                 DateTime = x.DateTime,
             }).ToList();
             model = new RollCallHistroyResponseModel()
-            {      
+            {
                 rollCallHistoryLists = lst,
                 Success = true,
                 Message = $"This Roll No - {requestModel.RollNo} Roll Call List"
