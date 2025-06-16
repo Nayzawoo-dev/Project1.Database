@@ -1,0 +1,32 @@
+[
+  {
+    "Name": "Multiple Project",
+    "Projects": [
+      {
+        "Path": "Project5Api\\Project5Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "Prj5ConsoleApp\\Prj5ConsoleApp.csproj",
+        "Action": "Start",
+        "DebugTarget": "Prj5ConsoleApp"
+      }
+    ]
+  },
+  {
+    "Name": "Multiple Project2",
+    "Projects": [
+      {
+        "Path": "Prj6Api\\Prj6Api.csproj",
+        "Action": "Start",
+        "DebugTarget": "https"
+      },
+      {
+        "Path": "Prj6ConsoleApp\\Prj6ConsoleApp.csproj",
+        "Action": "Start",
+        "DebugTarget": "Prj6ConsoleApp"
+      }
+    ]
+  }
+]
