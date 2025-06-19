@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="stylesheet" href="./src/output.css" />
+  </head>
+  <body>
+    <main class="container p-10">
+      <label for="txtUserName">Username</label>
+      <input
+        type="text"
+        class="border-2 border-gray-500 w-full p-2"
+        id="txtUserName"
+      />
+      <label for="txtUserName">Email</label>
+      <input
+        type="email"
+        class="border-2 border-gray-500 w-full p-2"
+        id="txtEmail"
+      />
+      <label for="txtUserName">Password</label>
+      <input
+        type="password"
+        class="border-2 border-gray-500 w-full p-2"
+        id="txtPassword"
+      />
+      <div class="mt-2.5 text-right">
+        <button
+          class="border-2 px-2 py-0.5 rounded-sm bg-green-500 text-white w-20"
+          id="btnInsert"
+        >
+          Insert
+        </button>
+        <button
+          class="border-2 px-2 py-0.5 rounded-sm bg-blue-500 text-white w-20"
+          id="btnUpdate"
+        >
+          Update
+        </button>
+        <button
+          class="border-2 px-2 py-0.5 rounded-sm bg-red-500 text-white w-20"
+          id="btnDelete"
+        >
+          Delete
+        </button>
+      </div>
+    </main>
+    <script src="./plugin/jquery-3.7.1.min.js"></script>
+    <script src="./JS/style3.js"></script>
+  </body>
+</html>
