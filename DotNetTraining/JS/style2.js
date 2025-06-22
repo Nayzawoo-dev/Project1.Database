@@ -17,14 +17,9 @@ function updateDB(lst){
 
 function loadData() {
   let count = 0;
-  let res = localStorage.getItem("Data");
-  let data = [];
-  if (res != null) {
-    data = JSON.parse(res);
-  }
+  let data = getData();
   $("#TbRow").html('');
   data.forEach((item) => {
-    console.log(item);
     $("#TbRow").append(`<tr class="hover:bg-gray-100 even:bg-gray-50">
   <td class="px-4 py-2 border border-gray-200 text-sm text-gray-700">${++count}</td>
   <td class="px-4 py-2 border border-gray-200 text-sm text-gray-700">${
@@ -100,7 +95,6 @@ function loadData() {
 $("#btnSave").click(function () {
  if(editId == null){
    let res = localStorage.getItem("Data");
-  console.log("data is " + res);
   if (res == null) {
     res = [];
   } else {
