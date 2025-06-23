@@ -1,0 +1,33 @@
+﻿@model List<WalletModel>
+@{
+	int count = 0;
+	ViewData["Title"] = "Wallet User List";
+}
+
+<h1>Wallet User List @(Model.Count)</h1>
+
+<a href="/Wallet/Create" class="btn btn-outline-success">Register Wallet User</a>
+<table class="table table-responsive">
+	<thead>
+		<tr>
+			<th>No.</th>
+			<th>WalletUserName</th>
+			<th>FullName</th>
+			<th>MobileNo</th>
+			<th>Balance</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var item in Model)
+		{
+
+			<tr>
+				<td>@(++count)</td>
+				<td>@item.WalletUserName</td>
+				<td>@item.FullName</td>
+				<td>@item.MobileNo</td>
+				<td>@item.Balance</td>
+			</tr>
+		}
+	</tbody>
+</table>

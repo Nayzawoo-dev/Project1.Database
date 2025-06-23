@@ -20,10 +20,14 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark"  href="/Home">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" href="/Home/Privacy">Privacy</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" href="/Wallet">Wallet</a>
                         </li>
                     </ul>
                 </div>
@@ -32,6 +36,29 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
+            @{
+                bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+                string message = Convert.ToString(TempData["message"] ?? string.Empty);
+            }
+            @if (!string.IsNullOrEmpty(message))
+            {
+                @* if (isSuccess) *@
+                @* { *@
+                @* 	<div class="alert alert-success" role="alert"> *@
+                @* 		@message *@
+                @* 	</div> *@
+                @* } *@
+                @* else *@
+                @* { *@
+                @* 	<div class="alert alert-danger" role="alert"> *@
+                @* 		@message *@
+                @* 	</div> *@
+                @* } *@
+
+                <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+                    @message
+                </div>
+            }
             @RenderBody()
         </main>
     </div>
@@ -45,5 +72,11 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        setTimeout(function(){
+            $('#alert').remove();
+        },3000)
+    </script>
 </body>
 </html>
