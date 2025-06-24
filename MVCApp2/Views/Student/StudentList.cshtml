@@ -1,0 +1,26 @@
+﻿@model List<StudentModel>
+@{
+    bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+    string message = Convert.ToString(TempData["message"] ?? string.Empty);
+}
+@if (!string.IsNullOrEmpty(message))
+{
+    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+        @message
+    </div>
+}
+<h1>University Student List</h1>
+<div class=" mt-3 ">
+@foreach(var item in Model)
+{
+        <div class="card d-inline-block mt-2" style="width: 18rem;">
+            <img src="~/University.jpg" class="card-img-top" alt="...">
+            <div class="card-body">
+                <h5 class="card-title">Roll No : @item.RollNo</h5>
+                <p class="card-text">Name : @item.Name</p>
+                <a href="#" class="btn btn-primary">Student</a>
+            </div>
+        </div>
+}
+</div>
+<a href="/Student/Create" class="btn btn-success mt-3">Add New Student</a>

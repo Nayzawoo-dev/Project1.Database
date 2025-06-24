@@ -1,0 +1,35 @@
+﻿@{
+    bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+    string message = Convert.ToString(TempData["message"] ?? string.Empty);
+}
+@if (!string.IsNullOrEmpty(message))
+{
+    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+        @message
+    </div>
+}
+
+<h1 class="mx-auto">Login Your Account</h1>
+<form method="get" action="/Wallet/Login">
+    <div class="mb-3">
+        <label for="walletUsername" class="form-label">Wallet Username</label>
+        <input type="text" name="WalletUserName" class="form-control" id="txtwalletUsername">
+    </div>
+    <div class="mb-3">
+        <label for="mobileNo" class="form-label">Mobile No</label>
+        <input type="tel" name="MobileNo" class="form-control" id="txtmobileNo">
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2">Login</button>
+        <button type="reset" class="btn btn-secondary">Cancel</button>
+    </div>
+</form>
+
+@model List<WalletModel>
+<div class="text-center">
+    @foreach (var item in Model)
+    {
+        <h1>Welcome @item.WalletUserName</h1>
+        <p>Your Balance is @item.Balance</p>
+    }
+</div>

@@ -1,0 +1,18 @@
+﻿@model List<StudentModel>
+@{
+    bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+    string message = Convert.ToString(TempData["message"] ?? string.Empty);
+}
+@if (!string.IsNullOrEmpty(message))
+{
+    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+        @message
+    </div>
+}
+@foreach(var item in Model)
+{
+	<h1>Welcome @item.Name</h1>
+	<p>Your Roll Number is @item.RollNo</p>
+}
+
+

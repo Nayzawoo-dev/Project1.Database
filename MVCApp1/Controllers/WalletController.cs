@@ -24,10 +24,10 @@ namespace MVCApp1.Controllers
             connection.Open();
             var lst = await connection.QueryAsync<WalletModel>("select * from Tbl_Wallet");
             connection.Close();
-            return View("WalletIndex",lst.ToList());
+            return View("WalletIndex", lst.ToList());
         }
 
-        
+
         [ActionName("Create")]
         public IActionResult CreateIndex()
         {
@@ -49,7 +49,7 @@ namespace MVCApp1.Controllers
 		   @FullName,
 		   @MobileNo,
 		   @Balance)";
-            var lst = await connection.ExecuteAsync(query,requestmodel);
+            var lst = await connection.ExecuteAsync(query, requestmodel);
             bool isSuccess = lst > 0;
             string message = isSuccess ? "Success" : "Failed";
             TempData["isSuccess"] = isSuccess;
@@ -57,14 +57,31 @@ namespace MVCApp1.Controllers
             connection.Close();
             return RedirectToAction("Index");
         }
-    }
+        [HttpGet]
+        [ActionName("Login")]
+        public async Task<IActionResult> LoginIndex(WalletModel requestmodel)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = @"select * from Tbl_Wallet where WalletUserName = @WalletUserName and MobileNo = @MobileNo";
+            var lst = await connection.QueryAsync<WalletModel>(query, requestmodel);
+            var list = lst.ToList();
+            connection.Close();
+            bool isSuccess = list.Count > 0;
+            string message = isSuccess ? "Login Successful" : "Incorrect Username or Mobile No";
+            TempData["isSuccess"] = isSuccess;
+            TempData["message"] = message;
+            return View("LoginIndex",list);
+        }
 
+
+    }
     public class WalletModel
     {
         public string WalletUserName { get; set; }
 
         public string FullName { get; set; }
         public string MobileNo { get; set; }
-        public decimal Balance {  get; set; }
+        public decimal Balance { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using MVCApp1.Models;
+using MVCApp2.Models;
 
-namespace MVCApp1.Controllers
+namespace MVCApp2.Controllers
 {
     public class HomeController : Controller
     {
@@ -17,6 +17,7 @@ namespace MVCApp1.Controllers
         {
             return View();
         }
+
         public IActionResult Privacy()
         {
             return View();

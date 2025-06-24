@@ -1,0 +1,28 @@
+﻿@{
+    bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+    string message = Convert.ToString(TempData["message"] ?? string.Empty);
+}
+@if (!string.IsNullOrEmpty(message))
+{
+    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+        @message
+    </div>
+}
+<h1>Add New Student</h1>
+<form method="post" action="/Student/Create">
+    <div class="mb-3">
+        <label for="walletUsername" class="form-label">Name</label>
+        <input type="text" name="Name" class="form-control" id="Name">
+
+        <label for="walletUsername" class="form-label">Email</label>
+        <input type="email" name="Name" class="form-control" id="Name">
+
+        <label for="walletUsername" class="form-label">Age</label>
+        <input type="text" name="Name" class="form-control" id="Name">
+    </div>
+    <div class="d-flex justify-content-end">
+        <button type="submit" class="btn btn-primary me-2">Save</button>
+        <button type="reset" class="btn btn-secondary">Cancel</button>
+    </div>
+</form>
+
