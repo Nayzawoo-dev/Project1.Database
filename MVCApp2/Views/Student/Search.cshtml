@@ -3,20 +3,15 @@
     bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
     string message = Convert.ToString(TempData["message"] ?? string.Empty);
 }
-@if (!string.IsNullOrEmpty(message))
-{
-    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
-        @message
-    </div>
-}
+
 <h1>University Student List</h1>
 <form class="d-flex" method="post" action="/Student/Search">
     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="keyword" id="keyword">
     <button class="btn btn-outline-success" type="submit">Search</button>
 </form>
 <div class=" mt-3 ">
-@foreach(var item in Model)
-{
+    @foreach (var item in Model)
+    {
         <div class="card d-inline-block mt-2" style="width: 18rem;">
             <img src="~/University.jpg" class="card-img-top" alt="...">
             <div class="card-body">
@@ -25,6 +20,25 @@
                 <a href="#" class="btn btn-primary">Student</a>
             </div>
         </div>
-}
+    }
 </div>
+@if (!string.IsNullOrEmpty(message))
+{
+    if(isSuccess is false)
+    {
+            <div class="text-center mx-auto mt-5" style="max-width: 500px;">
+                <div class="card-body bg-transparent">
+                    <!-- Warning Icon as Image -->
+                    <img src="~/exclamation-triangle.svg" alt="Warning Icon"
+                         class="img-fluid d-block mx-auto mb-3"
+                         style="width: 100px; height: 100px;">
+
+                    <h4 class="card-title fw-bold">သတိပေးချက်</h4>
+                    <p class="card-text">Your Student Not Found</p>
+                    <a href="/Student" class="btn btn-warning">နားလည်ပါပြီ</a>
+                </div>
+            </div>       
+    }
+}
 <a href="/Student/Create" class="btn btn-success mt-3">Add New Student</a>
+

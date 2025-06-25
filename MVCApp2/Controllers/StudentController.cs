@@ -58,13 +58,8 @@ namespace MVCApp2.Controllers
             return RedirectToAction("Index");
         }
 
-        [ActionName("LoginUser")]
-        public IActionResult LoginUser()
-        {
-            return View("LoginUser");
-        }
 
-        [ActionName("login")]
+        [ActionName("Login")]
         public async Task<IActionResult> StudentLogin(StudentModel requestmodel)
         {
             
@@ -76,6 +71,10 @@ namespace MVCApp2.Controllers
       ,[RollNo]
       ,[Name]
   FROM [dbo].[Tbl_Student] where RollNo = @RollNo and Name = @Name";
+            if (string.IsNullOrEmpty(requestmodel.Name) && string.IsNullOrEmpty(requestmodel.RollNo))
+            {
+                return View("StudentLogin");
+            }
             if (string.IsNullOrEmpty(requestmodel.Name))
             {
                 isSuccess = false;
@@ -109,11 +108,40 @@ namespace MVCApp2.Controllers
             TempData["message"] = message;
             return View("LoginUser",list);
         }
+
+        [ActionName("Search")]
+
+        public async Task<IActionResult> SearchIndex(StudentModel requestkeyword)
+        {
+            bool isSuccess;
+            string message;
+            string query = @"select * from Tbl_Student where Name Like '%' + @keyword + '%'";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            var lst = await connection.QueryAsync<StudentModel>(query, requestkeyword);
+            var list = lst.ToList();
+            connection.Close();
+            if (string.IsNullOrEmpty(requestkeyword.keyword))
+            {
+                return RedirectToAction("Index", list);
+            }
+            if (list.Count is 0)
+            { 
+                isSuccess = false;
+                message = "Your Student is not found";
+                TempData["isSuccess"] = isSuccess;
+                TempData["message"] = message;
+                return View("Search",list);
+            } 
+            return View("Search",list);
+        }
     }
 
     public class StudentModel
     {
+        public string keyword { get; set; }
         public string RollNo { get; set; }
         public string Name { get; set; }    
     }
+
 }
