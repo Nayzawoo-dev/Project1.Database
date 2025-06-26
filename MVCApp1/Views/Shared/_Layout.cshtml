@@ -40,8 +40,15 @@
     </header>
     <div class="container">
         <main role="main" class="pb-3">
-           
-
+            @{bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
+            string message = Convert.ToString(TempData["message"] ?? string.Empty);
+            }
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
+                    @message
+                </div>
+            }
             @RenderBody()
         </main>
     </div>

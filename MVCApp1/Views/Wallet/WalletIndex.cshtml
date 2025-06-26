@@ -3,7 +3,6 @@
 	int count = 0;
 	ViewData["Title"] = "Wallet User List";
 }
-
 <h1>Wallet User List @(Model.Count)</h1>
 
 <a href="/Wallet/Create" class="btn btn-outline-success">Register Wallet User</a>
@@ -15,6 +14,7 @@
 			<th>FullName</th>
 			<th>MobileNo</th>
 			<th>Balance</th>
+			<th>Action</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -27,6 +27,9 @@
 				<td>@item.FullName</td>
 				<td>@item.MobileNo</td>
 				<td>@item.Balance</td>
+				<td><a href="/Wallet/Edit/@item.WalletId" class="btn btn-outline-warning">Edit</a>
+					<a href="/Wallet/Delete/@item.WalletId" class="btn btn-outline-danger">Delete</a>
+				</td>
 			</tr>
 		}
 	</tbody>

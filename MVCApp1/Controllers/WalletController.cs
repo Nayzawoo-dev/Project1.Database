@@ -71,17 +71,84 @@ namespace MVCApp1.Controllers
             string message = isSuccess ? "Login Successful" : "Incorrect Username or Mobile No";
             TempData["isSuccess"] = isSuccess;
             TempData["message"] = message;
-            return View("LoginIndex",list);
+            return View("LoginIndex", list);
+        }
+
+        [ActionName("Edit")]
+        public async Task<IActionResult> WalletEdit(int id)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = @"SELECT [WalletId]
+      ,[WalletUserName]
+      ,[FullName]
+      ,[MobileNo]
+      ,[Balance]
+  FROM [dbo].[Tbl_Wallet] where WalletId = @WalletId";
+            var model = await connection.QueryFirstOrDefaultAsync<WalletModel>(query, new WalletModel
+            {
+                WalletId = id
+            });
+            if (model is null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Wallet Is Not Register!";
+                return RedirectToAction("Index");
+            }
+            connection.Close();
+            return View("WalletEdit", model);
+        }
+
+        [HttpPost]
+        [ActionName("Update")]
+        public async Task<IActionResult> WalletUpdate(int id, WalletModel requestmodel)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = @"UPDATE [dbo].[Tbl_Wallet]
+   SET [WalletUserName] = @WalletUserName
+      ,[FullName] = @FullName
+      ,[MobileNo] = @MobileNo
+      ,[Balance] = @Balance
+ WHERE WalletId = @WalletId";
+            var model = new WalletModel
+            {
+                WalletId = id,
+                WalletUserName = requestmodel.WalletUserName,
+                FullName = requestmodel.FullName,
+                MobileNo = requestmodel.MobileNo,
+                Balance = requestmodel.Balance,
+            };
+            int result = await connection.ExecuteAsync(query, model);
+            if (result is 0)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Wallet User Is Not Register";
+                return RedirectToAction("Index");
+            }
+            connection.Close();
+            TempData["isSuccess"] = true;
+            TempData["message"] = "Your Update Successful!";
+            return RedirectToAction("Index");
+        }
+
+        [ActionName("Delete")]
+        public async Task<IActionResult> WalletDelete(int id)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = @"DELETE FROM [dbo].[Tbl_Wallet]
+      WHERE WalletId = @WalletId";
+            int res = await connection.ExecuteAsync(query, new WalletModel
+            {
+                WalletId = id,
+            });
+            connection.Close();
+            TempData["isSuccess"] = true;
+            TempData["message"] = "Delete Successful";
+            return RedirectToAction("Index");
         }
 
 
-    }
-    public class WalletModel
-    {
-        public string WalletUserName { get; set; }
-
-        public string FullName { get; set; }
-        public string MobileNo { get; set; }
-        public decimal Balance { get; set; }
     }
 }

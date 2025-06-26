@@ -1,14 +1,4 @@
-﻿@{
-    bool isSuccess = Convert.ToBoolean(TempData["isSuccess"] ?? false);
-    string message = Convert.ToString(TempData["message"] ?? string.Empty);
-}
-@if (!string.IsNullOrEmpty(message))
-{
-    <div id="alert" class="alert alert-@(isSuccess ? "success" : "danger")" role="alert">
-        @message
-    </div>
-}
-
+﻿
 <h1 class="mx-auto">Login Your Account</h1>
 <form method="get" action="/Wallet/Login">
     <div class="mb-3">
