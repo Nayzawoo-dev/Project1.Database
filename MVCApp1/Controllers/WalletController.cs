@@ -52,11 +52,22 @@ namespace MVCApp1.Controllers
 		   @FullName,
 		   @MobileNo,
 		   @Balance)";
+            string query1 = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
             string pattern = @"^(09|\+959)\d{7,9}$";
             if (!Regex.IsMatch(requestmodel.MobileNo, pattern))
             {
                 TempData["isSuccess"] = false;
                 TempData["message"] = "Your Mobile No Is Invalid";
+                return View("CreateIndex");
+            }
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
+            {
+                MobileNo = requestmodel.MobileNo,
+            });
+            if (res != null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Mobile No Is Already Register!";
                 return View("CreateIndex");
             }
             var lst = await connection.ExecuteAsync(query, requestmodel);
@@ -239,6 +250,8 @@ namespace MVCApp1.Controllers
         Deposit:
             return View("Deposit");
         }
+
+
 
 
     }
