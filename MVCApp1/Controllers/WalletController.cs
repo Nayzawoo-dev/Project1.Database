@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
@@ -38,6 +39,7 @@ namespace MVCApp1.Controllers
         [ActionName("Create")]
         public async Task<IActionResult> CreateIndex(WalletModel requestmodel)
         {
+            requestmodel.Balance = 0;
             using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
             connection.Open();
             string query = @"INSERT INTO [dbo].[Tbl_Wallet]
@@ -50,6 +52,13 @@ namespace MVCApp1.Controllers
 		   @FullName,
 		   @MobileNo,
 		   @Balance)";
+            string pattern = @"^(09|\+959)\d{7,9}$";
+            if (!Regex.IsMatch(requestmodel.MobileNo, pattern))
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Mobile No Is Invalid";
+                return View("CreateIndex");
+            }
             var lst = await connection.ExecuteAsync(query, requestmodel);
             bool isSuccess = lst > 0;
             string message = isSuccess ? "Success" : "Failed";
