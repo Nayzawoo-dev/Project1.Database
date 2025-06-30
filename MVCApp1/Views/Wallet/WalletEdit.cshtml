@@ -1,5 +1,5 @@
 ﻿@model WalletModel
-<h1>Register Your Wallet Account</h1>
+<h1>Edit Your Wallet Account</h1>
 <form method="post" action="/Wallet/Update/@Model.WalletId">
     <div class="mb-3">
         <label for="walletUsername" class="form-label">Wallet Username</label>
@@ -11,15 +11,15 @@
     </div>
     <div class="mb-3">
         <label for="mobileNo" class="form-label">Mobile No</label>
-        <input type="tel" name="MobileNo" value="@Model.MobileNo" class="form-control" id="txtmobileNo">
+        <input type="tel" name="MobileNo" value="@Model.MobileNo" class="form-control" id="txtmobileNo" readonly>
     </div>
     <div class="mb-3">
         <label for="balance" class="form-label">Balance</label>
-        <input type="number" name="Balance" value="@Model.Balance" class="form-control" id="txtbalance">
+        <input type="number" name="Balance" value="@Model.Balance" class="form-control" id="txtbalance" readonly>
     </div>
     <div class="d-flex justify-content-end">
         <button type="submit" class="btn btn-primary me-2">Update</button>
-        <button type="reset" class="btn btn-secondary">Cancel</button>
+        <a href="/Wallet" class="btn btn-secondary">Cancel</a>
     </div>
 </form>
 

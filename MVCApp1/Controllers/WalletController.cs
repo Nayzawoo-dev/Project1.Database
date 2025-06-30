@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
+using Stripe;
 
 namespace MVCApp1.Controllers
 {
@@ -137,6 +138,18 @@ namespace MVCApp1.Controllers
         {
             using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
             connection.Open();
+            string query1 = @"select * from Tbl_Wallet where WalletId = @WalletId";
+            var result = await connection.QueryAsync<WalletModel>(query1, new WalletModel
+            {
+                WalletId = id,
+            });
+            var list = result.ToList();
+            if (list.Count is 0)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Cannot Delete";
+                return RedirectToAction("Index");
+            }
             string query = @"DELETE FROM [dbo].[Tbl_Wallet]
       WHERE WalletId = @WalletId";
             int res = await connection.ExecuteAsync(query, new WalletModel
@@ -149,6 +162,90 @@ namespace MVCApp1.Controllers
             return RedirectToAction("Index");
         }
 
+        [ActionName("Deposit")]
+        public IActionResult Deposit()
+        {
+            return View("Deposit");
+        }
 
+        [HttpPost]
+        [ActionName("Deposit")]
+        public async Task<IActionResult> Deposit(DepositModel requestmodel)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query1 = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
+            {
+                MobileNo = requestmodel.MobileNo,
+            });
+            if (res is null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Mobile No Is Not Register";
+                goto Deposit;
+            }
+            if (requestmodel.Amount <= 0)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Amount Must Be Greater Than 0";
+                goto Deposit;
+            }
+            res.Balance += requestmodel.Amount;
+            string query2 = @"UPDATE [dbo].[Tbl_Wallet]
+   SET
+      [Balance] = @Balance
+ WHERE MobileNo = @MobileNo";
+            var result = await connection.ExecuteAsync(query2, new WalletModel
+            {
+                MobileNo = requestmodel.MobileNo,
+                Balance = res.Balance,
+            });
+            TempData["isSuccess"] = true;
+            TempData["message"] = "Deposit Successful";
+            if (result is 1)
+            {
+                string query3 = @"INSERT INTO [dbo].[Tbl_WalletHistory]
+           ([MobileNo]
+           ,[TransactionType]
+           ,[Amount]
+           ,[Date])
+     VALUES
+           (@MobileNo
+           ,@TransactionType
+           ,@Amount
+           ,@Date)";
+                int results = await connection.ExecuteAsync(query3, new WalletHistory
+                {
+                    MobileNo = requestmodel.MobileNo,
+                    TransactionType = "Deposit",
+                    Amount = requestmodel.Amount,
+                    Date = DateTime.Now,
+                });
+                goto Result;
+            }
+            connection.Close();
+        Result:
+            return RedirectToAction("Index");
+        Deposit:
+            return View("Deposit");
+        }
+
+
+    }
+
+    public class WalletHistory
+    {
+        public string MobileNo { get; set; }
+        public string TransactionType { get; set; }
+        public decimal Amount { get; set; }
+
+        public DateTime Date { get; set; }
+    }
+
+    public class DepositModel
+    {
+        public string MobileNo { get; set; }
+        public decimal Amount { get; set; }
     }
 }
