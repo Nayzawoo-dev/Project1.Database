@@ -251,6 +251,83 @@ namespace MVCApp1.Controllers
             return View("Deposit");
         }
 
+        [ActionName("Withdraw")]
+        public IActionResult Withdraw()
+        {
+            return View("Withdraw");
+        }
+
+        [HttpPost]
+        [ActionName("Withdraw")]
+
+        public async Task<IActionResult> Withdraw(DepositModel requestmodel)
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query1 = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
+            {
+                MobileNo = requestmodel.MobileNo,
+            });
+            if (res is null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Your Mobile No Is Not Register";
+                goto Withdraw;
+            }
+            if (requestmodel.Amount <= 0)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Amount Must Be Greater Than 0";
+                goto Withdraw;
+            }
+            res.Balance -= requestmodel.Amount;
+            if(res.Balance <= 10000)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "You have to leave at least 3000";
+                goto Withdraw;
+            }
+            string query2 = @"UPDATE [dbo].[Tbl_Wallet]
+   SET
+      [Balance] = @Balance
+ WHERE MobileNo = @MobileNo";
+            var result = await connection.ExecuteAsync(query2, new WalletModel
+            {
+                MobileNo = requestmodel.MobileNo,
+                Balance = res.Balance,
+            });
+            TempData["isSuccess"] = true;
+            TempData["message"] = "Withdraw Successful";
+            if (result is 1)
+            {
+                string query3 = @"INSERT INTO [dbo].[Tbl_WalletHistory]
+           ([MobileNo]
+           ,[TransactionType]
+           ,[Amount]
+           ,[Date])
+     VALUES
+           (@MobileNo
+           ,@TransactionType
+           ,@Amount
+           ,@Date)";
+                int results = await connection.ExecuteAsync(query3, new WalletHistory
+                {
+                    MobileNo = requestmodel.MobileNo,
+                    TransactionType = "Withdraw",
+                    Amount = requestmodel.Amount,
+                    Date = DateTime.Now,
+                });
+                goto Result;
+            }
+            connection.Close();
+        Result:
+            return RedirectToAction("Index");
+        Withdraw:
+            return View("Withdraw");
+        }
+
+
 
 
 
