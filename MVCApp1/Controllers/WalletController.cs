@@ -259,7 +259,6 @@ namespace MVCApp1.Controllers
 
         [HttpPost]
         [ActionName("Withdraw")]
-
         public async Task<IActionResult> Withdraw(DepositModel requestmodel)
         {
             using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
@@ -327,6 +326,23 @@ namespace MVCApp1.Controllers
             return View("Withdraw");
         }
 
+        [ActionName("History")]
+        public async Task<IActionResult> History()
+        {
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = "select * from Tbl_WalletHistory";
+            var res = await connection.QueryAsync<WalletHistory>(query);
+            return View("History",res);
+        }
+
+        [ActionName("Transaction")]
+
+        public IActionResult Transaction()
+        {
+            return View("Transaction");
+        }
+
 
 
 
@@ -346,5 +362,14 @@ namespace MVCApp1.Controllers
     {
         public string MobileNo { get; set; }
         public decimal Amount { get; set; }
+    }
+
+    public class TransactionModel
+    {
+        public string TransactionNo { get; set; }
+        public string FromMobileNo { get; set; }
+        public string ToMobileNo { get; set;}
+        public decimal Amount { get; set; }
+        public DateTime TransactionDate { get; set; } 
     }
 }

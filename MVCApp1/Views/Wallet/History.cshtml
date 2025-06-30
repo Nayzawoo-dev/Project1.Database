@@ -1,10 +1,8 @@
-﻿@model List<WalletModel>
+﻿@model List<WalletHistory>
+<h1>Wallet User List @(Model.Count)</h1>
 @{
 	int count = 0;
-	ViewData["Title"] = "Wallet User List";
 }
-<h1>Wallet History List @(Model.Count)</h1>
-
 <a href="/Wallet/Create" class="btn btn-outline-success">Register Wallet User</a>
 <a href="/Wallet/Deposit" class="btn btn-outline-success">Deposit</a>
 <a href="/Wallet/Withdraw" class="btn btn-outline-success">Withdraw</a>
@@ -13,11 +11,10 @@
 	<thead>
 		<tr>
 			<th>No.</th>
-			<th>WalletUserName</th>
-			<th>FullName</th>
 			<th>MobileNo</th>
-			<th>Balance</th>
-			<th>Action</th>
+			<th>Transaction Type</th>
+			<th>Amount</th>
+			<th>Date</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -26,13 +23,10 @@
 
 			<tr>
 				<td>@(++count)</td>
-				<td>@item.WalletUserName</td>
-				<td>@item.FullName</td>
 				<td>@item.MobileNo</td>
-				<td>@item.Balance</td>
-				<td><a href="/Wallet/Edit/@item.WalletId" class="btn btn-outline-warning">Edit</a>
-					<a href="/Wallet/Delete/@item.WalletId" class="btn btn-outline-danger">Delete</a>
-				</td>
+				<td>@item.TransactionType</td>
+				<td>@item.Amount</td>
+				<td>@item.Date</td>
 			</tr>
 		}
 	</tbody>
