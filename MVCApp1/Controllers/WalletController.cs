@@ -281,7 +281,7 @@ namespace MVCApp1.Controllers
                 goto Withdraw;
             }
             res.Balance -= requestmodel.Amount;
-            if(res.Balance <= 10000)
+            if (res.Balance <= 10000)
             {
                 TempData["isSuccess"] = false;
                 TempData["message"] = "You have to leave at least 3000";
@@ -333,13 +333,101 @@ namespace MVCApp1.Controllers
             connection.Open();
             string query = "select * from Tbl_WalletHistory";
             var res = await connection.QueryAsync<WalletHistory>(query);
-            return View("History",res);
+            return View("History", res);
         }
 
         [ActionName("Transaction")]
 
         public IActionResult Transaction()
         {
+            return View("Transaction");
+        }
+
+        [HttpPost]
+        [ActionName("Transaction")]
+        public async Task<IActionResult> Transaction(TransactionModel requestmodel)
+        {
+            int num = 0;
+            string count = "KBZ" + (++num);
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            string query = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
+            var model1 = new WalletModel
+            {
+                MobileNo = requestmodel.FromMobileNo
+            };
+            var res = await connection.QueryAsync<WalletModel>(query, model1);
+            if (res is null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "From Mobile No Is Not Register!";
+                goto Transaction;
+
+            }
+            string query1 = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
+            var model2 = new WalletModel
+            {
+                MobileNo = requestmodel.ToMobileNo,
+            };
+            var res1 = await connection.QueryAsync<WalletModel>(query1,model2);
+            if (res1 is null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "To Mobile No Is Not Register";
+                goto Transaction;
+            }
+            model1.Balance -= requestmodel.Amount;
+            if (requestmodel.Amount > 0 || model1.Balance <= 10000)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Amount Must Be Greater Than 0 or Must At Least 10000";
+                goto Transaction;
+            }
+            model2.Balance += requestmodel.Amount;
+            string query2 = @"UPDATE [dbo].[Tbl_Wallet]
+   SET 
+      [Balance] = @Balance
+   
+ WHERE FromMobileNo = @FromMobileNo";
+            var result = await connection.ExecuteAsync(query2, new WalletModel
+            {
+                Balance = model1.Balance,
+            });
+            string query3 = @"UPDATE [dbo].[Tbl_Wallet]
+   SET 
+      [Balance] = @Balance
+   
+ WHERE ToMobileNo = @ToMobileNo";
+            var result1 = await connection.ExecuteAsync(query3, new WalletModel
+            {
+                Balance = model2.Balance,
+            });
+            string query4 = @"INSERT INTO [dbo].[Tbl_Transaction]
+           ([TransactionId]
+           ,[TransactionNo]
+           ,[FromMobileNo]
+           ,[ToMobileNo]
+           ,[Amount]
+           ,[TransactionDate])
+     VALUES
+           (<TransactionId, varchar(50),>
+           ,<TransactionNo, varchar(50),>
+           ,<FromMobileNo, varchar(50),>
+           ,<ToMobileNo, varchar(50),>
+           ,<Amount, decimal(20,2),>
+           ,<TransactionDate, date,>)";
+            var list = await connection.ExecuteAsync(query4, new TransactionModel
+            {
+                TransactionId = DateTime.Now,
+                TransactionNo = count,
+                FromMobileNo = requestmodel.FromMobileNo,
+                ToMobileNo = requestmodel.ToMobileNo,
+                TransactionDate = DateTime.Now,
+            });
+            connection.Close();
+            TempData["isSuccess"] = true;
+            TempData["message"] = "Transaction Successful!";
+        Transaction:
             return View("Transaction");
         }
 
@@ -366,10 +454,11 @@ namespace MVCApp1.Controllers
 
     public class TransactionModel
     {
+        public DateTime TransactionId { get; set; }
         public string TransactionNo { get; set; }
         public string FromMobileNo { get; set; }
-        public string ToMobileNo { get; set;}
+        public string ToMobileNo { get; set; }
         public decimal Amount { get; set; }
-        public DateTime TransactionDate { get; set; } 
+        public DateTime TransactionDate { get; set; }
     }
 }
