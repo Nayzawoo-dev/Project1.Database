@@ -1,6 +1,6 @@
 ﻿
 <h1 class="mx-auto">Login Your Account</h1>
-<form method="get" action="/Wallet/Login">
+<form method="post" action="/Wallet/Login">
     <div class="mb-3">
         <label for="walletUsername" class="form-label">Wallet Username</label>
         <input type="text" name="WalletUserName" class="form-control" id="txtwalletUsername">
@@ -15,11 +15,11 @@
     </div>
 </form>
 
-@model List<WalletModel>
-<div class="text-center">
-    @foreach (var item in Model)
-    {
-        <h1>Welcome @item.WalletUserName</h1>
-        <p>Your Balance is @item.Balance</p>
-    }
-</div>
+@* @model List<WalletModel> *@
+@* <div class="text-center"> *@
+@*     @foreach (var item in Model) *@
+@*     { *@
+@*         <h1>Welcome @item.WalletUserName</h1> *@
+@*         <p>Your Balance is @item.Balance</p> *@
+@*     } *@
+@* </div> *@

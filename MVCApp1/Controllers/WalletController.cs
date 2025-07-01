@@ -78,7 +78,15 @@ namespace MVCApp1.Controllers
             connection.Close();
             return RedirectToAction("Index");
         }
-        [HttpGet]
+
+
+        [ActionName("LoginView")]
+
+        public IActionResult LoginIndex()
+        {
+            return View("LoginIndex");
+        }
+    
         [ActionName("Login")]
         public async Task<IActionResult> LoginIndex(WalletModel requestmodel)
         {
@@ -280,11 +288,17 @@ namespace MVCApp1.Controllers
                 TempData["message"] = "Amount Must Be Greater Than 0";
                 goto Withdraw;
             }
-            res.Balance -= requestmodel.Amount;
-            if (res.Balance <= 10000)
+            if (requestmodel.Amount > res.Balance)
             {
                 TempData["isSuccess"] = false;
-                TempData["message"] = "You have to leave at least 3000";
+                TempData["message"] = "You Don't Have Enough Money";
+                goto Withdraw;
+            }
+            res.Balance -= requestmodel.Amount;
+            if (res.Balance < 10000)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "You have to leave at least 10000";
                 goto Withdraw;
             }
             string query2 = @"UPDATE [dbo].[Tbl_Wallet]
@@ -356,7 +370,7 @@ namespace MVCApp1.Controllers
             {
                 MobileNo = requestmodel.FromMobileNo
             };
-            var res = await connection.QueryAsync<WalletModel>(query, model1);
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query, model1);
             if (res is null)
             {
                 TempData["isSuccess"] = false;
@@ -369,38 +383,47 @@ namespace MVCApp1.Controllers
             {
                 MobileNo = requestmodel.ToMobileNo,
             };
-            var res1 = await connection.QueryAsync<WalletModel>(query1,model2);
+            var res1 = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, model2);
             if (res1 is null)
             {
                 TempData["isSuccess"] = false;
                 TempData["message"] = "To Mobile No Is Not Register";
                 goto Transaction;
             }
-            model1.Balance -= requestmodel.Amount;
-            if (requestmodel.Amount > 0 || model1.Balance <= 10000)
+            if (res.Balance < requestmodel.Amount)
             {
+
                 TempData["isSuccess"] = false;
-                TempData["message"] = "Amount Must Be Greater Than 0 or Must At Least 10000";
+                TempData["message"] = "You Don't Have Enough Money";
                 goto Transaction;
             }
-            model2.Balance += requestmodel.Amount;
+            res.Balance -= requestmodel.Amount;
+            if (requestmodel.Amount < 0 || res.Balance < 10000)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Amount Must Be Greater Than 0 Or Must At Least 10000";
+                goto Transaction;
+            }
+            res1.Balance += requestmodel.Amount;
             string query2 = @"UPDATE [dbo].[Tbl_Wallet]
    SET 
       [Balance] = @Balance
    
- WHERE FromMobileNo = @FromMobileNo";
+ WHERE MobileNo = @MobileNo";
             var result = await connection.ExecuteAsync(query2, new WalletModel
             {
-                Balance = model1.Balance,
+                MobileNo = requestmodel.FromMobileNo,
+                Balance = res.Balance,
             });
             string query3 = @"UPDATE [dbo].[Tbl_Wallet]
    SET 
       [Balance] = @Balance
    
- WHERE ToMobileNo = @ToMobileNo";
+ WHERE MobileNo = @MobileNo";
             var result1 = await connection.ExecuteAsync(query3, new WalletModel
             {
-                Balance = model2.Balance,
+                MobileNo = requestmodel.ToMobileNo,
+                Balance = res1.Balance,
             });
             string query4 = @"INSERT INTO [dbo].[Tbl_Transaction]
            ([TransactionId]
@@ -410,25 +433,37 @@ namespace MVCApp1.Controllers
            ,[Amount]
            ,[TransactionDate])
      VALUES
-           (<TransactionId, varchar(50),>
-           ,<TransactionNo, varchar(50),>
-           ,<FromMobileNo, varchar(50),>
-           ,<ToMobileNo, varchar(50),>
-           ,<Amount, decimal(20,2),>
-           ,<TransactionDate, date,>)";
+           (@TransactionId,
+           @TransactionNo,
+           @FromMobileNo,
+           @ToMobileNo,
+           @Amount,
+           @TransactionDate)";
             var list = await connection.ExecuteAsync(query4, new TransactionModel
             {
                 TransactionId = DateTime.Now,
                 TransactionNo = count,
                 FromMobileNo = requestmodel.FromMobileNo,
                 ToMobileNo = requestmodel.ToMobileNo,
+                Amount = requestmodel.Amount,
                 TransactionDate = DateTime.Now,
             });
             connection.Close();
             TempData["isSuccess"] = true;
             TempData["message"] = "Transaction Successful!";
+            return RedirectToAction("Index");
         Transaction:
             return View("Transaction");
+        }
+
+        [ActionName("TransactionHistory")]
+
+        public async Task<IActionResult> TransactionHistory()
+        {
+            string query = @"select * from Tbl_Transaction";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            var res = await connection.QueryAsync<TransactionModel>(query);
+            return View("TransactionHistory",res.ToList());
         }
 
 
