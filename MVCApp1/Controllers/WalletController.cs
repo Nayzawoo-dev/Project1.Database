@@ -167,12 +167,11 @@ namespace MVCApp1.Controllers
             using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
             connection.Open();
             string query1 = @"select * from Tbl_Wallet where WalletId = @WalletId";
-            var result = await connection.QueryAsync<WalletModel>(query1, new WalletModel
+            var result = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
             {
                 WalletId = id,
             });
-            var list = result.ToList();
-            if (list.Count is 0)
+            if (result is null)
             {
                 TempData["isSuccess"] = false;
                 TempData["message"] = "Cannot Delete";
