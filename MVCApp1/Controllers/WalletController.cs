@@ -53,6 +53,7 @@ namespace MVCApp1.Controllers
 		   @MobileNo,
 		   @Balance)";
             string query1 = @"select * from Tbl_Wallet where MobileNo = @MobileNo";
+            string query2 = @"select * from Tbl_Wallet where WalletUserName = @WalletUserName";
             string pattern = @"^(09|\+959)\d{7,9}$";
             if (!Regex.IsMatch(requestmodel.MobileNo, pattern))
             {
@@ -60,11 +61,21 @@ namespace MVCApp1.Controllers
                 TempData["message"] = "Your Mobile No Is Invalid";
                 return View("CreateIndex");
             }
-            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query2, new WalletModel
+            {
+                WalletUserName = requestmodel.WalletUserName,
+            });
+            if(res != null)
+            {
+                TempData["isSuccess"] = false;
+                TempData["message"] = "Wallet User Name Is Already Exit!";
+                return View("CreateIndex");
+            }
+            var res1 = await connection.QueryFirstOrDefaultAsync<WalletModel>(query1, new WalletModel
             {
                 MobileNo = requestmodel.MobileNo,
             });
-            if (res != null)
+            if (res1 != null)
             {
                 TempData["isSuccess"] = false;
                 TempData["message"] = "Your Mobile No Is Already Register!";
