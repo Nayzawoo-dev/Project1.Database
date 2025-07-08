@@ -1,9 +1,5 @@
-﻿@model List<TransactionModel>
-@{
-	int count = 0;
-	ViewData["Title"] = "Wallet User List";
-}
-<h1>Wallet History List @(Model.Count)</h1>
+﻿
+<h1 id="header"> Wallet History List </h1>
 
 <a href="/Wallet/Create" class="btn btn-outline-success">Register Wallet User</a>
 <a href="/Wallet/Deposit" class="btn btn-outline-success">Deposit</a>
@@ -15,23 +11,31 @@
 	<thead>
 		<tr>
 			<th>No.</th>
-			<th>Transfer Mobile No</th>
-			<th>Received Mobile No</th>
-			<th>Amount</th>
-			<th>Date</th>
+			<th>WalletUserName</th>
+			<th>FullName</th>
+			<th>MobileNo</th>
+			<th>Balance</th>
+			<th>Action</th>
 		</tr>
 	</thead>
 	<tbody>
-		@foreach (var item in Model)
-		{
 
 			<tr>
-				<td>@(++count)</td>
-				<td>@item.FromMobileNo</td>
-				<td>@item.ToMobileNo</td>
-				<td>@item.Amount</td>
-				<td>@item.TransactionDate</td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>
+					<a href="/Wallet/Edit/" class="btn btn-outline-warning">Edit</a>
+					<a href="/Wallet/Delete/" class="btn btn-outline-danger">Delete</a>
+				</td>
 			</tr>
-		}
 	</tbody>
 </table>
+
+@section scripts {
+	<script>
+		alert("This is Wallet List Page")
+		$('#header').html('Gay');
+	</script>
+}
