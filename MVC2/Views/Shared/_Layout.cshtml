@@ -7,6 +7,7 @@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/MVC2.styles.css" asp-append-version="true" />
+	@await RenderSectionAsync("css", required: false)
 </head>
 <body>
 	<header>
@@ -26,9 +27,10 @@
 							<a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
 						</li>
 						<li class="nav-item">
-							<a href="/Wallet" class="nav-link text-dark" >WalletList</a>
+							<a href="/Wallet" class="nav-link text-dark">WalletList</a>
 						</li>
 					</ul>
+					@await RenderSectionAsync("header", required: false)
 				</div>
 			</div>
 		</nav>

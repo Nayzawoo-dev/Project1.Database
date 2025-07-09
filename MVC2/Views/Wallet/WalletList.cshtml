@@ -39,3 +39,19 @@
 		$('#header').html('Gay');
 	</script>
 }
+
+@section css {
+	@* <style>  *@
+	@* 	body{  *@
+	@* 	background-color : gray;  *@
+	@* 	}  *@
+	@*  </style> *@
+	<partial name="Background" />
+}
+
+@section header{
+	@* <button type="button" class="btn btn-primary">
+	@* 	Notifications <span class="badge bg-secondary">4</span> *@
+	@* </button> *@
+	<partial name="ButtonBadge"/>
+}
