@@ -357,7 +357,7 @@ namespace MVCApp1.Controllers
             connection.Open();
             string query = "select * from Tbl_WalletHistory";
             var res = await connection.QueryAsync<WalletHistory>(query);
-            return View("History", res);
+            return View("History", res.ToList());
         }
 
         [ActionName("Transaction")]

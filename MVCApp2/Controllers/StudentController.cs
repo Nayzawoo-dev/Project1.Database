@@ -38,13 +38,23 @@ namespace MVCApp2.Controllers
             using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
             connection.Open();
             string query = @"INSERT INTO [dbo].[Tbl_Student]
-           ([Name])
+           ([Name],
+            [Age])
      VALUES
-           (@Name)";
+           (@Name,
+            @Age)";
             if (string.IsNullOrEmpty(requestmodel.Name)) 
             {
                 bool Success = false;
                 string Message = "Username Field Is Required";
+                TempData["isSuccess"] = Success;
+                TempData["message"] = Message;
+                return View("StudentCreate");
+            }
+            if (requestmodel.Age <= 0 || requestmodel.Age < 18)
+            {
+                bool Success = false;
+                string Message = "Your Age Is Invalid";
                 TempData["isSuccess"] = Success;
                 TempData["message"] = Message;
                 return View("StudentCreate");
@@ -135,13 +145,31 @@ namespace MVCApp2.Controllers
             } 
             return View("Search",list);
         }
+
+        [ActionName("Edit")]
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            string query = "select * from Tbl_Student where StudentId = @StudentId";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            var lst = await connection.QueryFirstOrDefaultAsync<StudentModel>(query,new StudentModel
+            {
+                StudentId = id
+            });
+            connection.Close();
+            return View("Edit", lst);
+            
+        }
     }
 
     public class StudentModel
     {
         public string keyword { get; set; }
         public string RollNo { get; set; }
-        public string Name { get; set; }    
+        public string Name { get; set; }     
+        public int Age { get; set; }
+        public int StudentId { get; set; }
     }
 
 }
