@@ -13,7 +13,7 @@ namespace MVC2.Controllers
         {
             _connection = new SqlConnectionStringBuilder(configuration.GetConnectionString("DbConnection"));
         }
-        
+
         [ActionName("Index")]
         public IActionResult WalletIndex()
         {
@@ -38,11 +38,74 @@ namespace MVC2.Controllers
                 return Json(new { isSuccess = "false", message = ex.ToString() });
             }
         }
+
+        [ActionName("Create")]
+        public IActionResult WalletCreate()
+        {
+            return View("WalletCreate");
+        }
+
+        [HttpPost]
+        [ActionName("Save")]
+        public async Task<IActionResult> WalletSave(WalletModel requestModel)
+        {
+            try
+            {
+                requestModel.Balance = 0;
+                if (string.IsNullOrEmpty(requestModel.WalletUserName))
+                {
+                    return Json(new {isSuccess = false,message = " User Name Field Is Required"});
+                }
+                string query = @"INSERT INTO [dbo].[Tbl_Wallet]
+           ([WalletUserName]
+           ,[FullName]
+           ,[MobileNo]
+           ,[Balance])
+     VALUES
+           (@WalletUserName
+           ,@FullName
+           ,@MobileNo
+           ,@Balance)";
+                using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+                connection.Open();
+                var res = await connection.ExecuteAsync(query, new WalletModel
+                {
+                    WalletUserName = requestModel.WalletUserName,
+                    FullName = requestModel.FullName,
+                    MobileNo = requestModel.MobileNo,
+                    Balance = requestModel.Balance
+                });
+                connection.Close();
+                return Json(new { isSuccess = "Success", message = "Complete" });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { isSuccess = "false", message = ex.ToString() });
+            }
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public async Task<IActionResult> WalletDelete(WalletModel requestmodel)
+        {
+            string query = @"DELETE FROM [dbo].[Tbl_Wallet]
+                             WHERE WalletId = @WalletId";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            var res = await connection.ExecuteAsync(query, requestmodel);
+            connection.Close();
+            if (res <= 0)
+            {
+                return Json(new { IsSuccess = false, Message = "Delete Fail" });
+            }
+            return Json(new { IsSuccess = true, Message = "Delete Complete" });
+
+        }
     }
 
     public class WalletModel
     {
-        public int WalletId { get; set; } 
+        public int WalletId { get; set; }
         public string WalletUserName { get; set; }
         public string FullName { get; set; }
         public string MobileNo { get; set; }
