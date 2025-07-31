@@ -101,6 +101,40 @@ namespace MVC2.Controllers
             return Json(new { IsSuccess = true, Message = "Delete Complete" });
 
         }
+        [ActionName("Edit")]
+        public IActionResult WalletEdit()
+        {
+            return View("WalletEdit");
+        }
+        [HttpPost]
+        [ActionName("Edit")]
+        public async Task<IActionResult> WalletEdit(WalletModel requestmodel)
+        {
+            string query = "select * from Tbl_Wallet where WalletId = @WalletId";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            var res = await connection.QueryFirstOrDefaultAsync<WalletModel>(query, requestmodel);
+            connection.Close();
+            return Json(new { isSuccess = true, data = res });
+        }
+        [HttpPost]
+        [ActionName("Update")]
+        public async Task<IActionResult> WalletUpdate(WalletModel requestmodel)
+        {
+            string query = @"UPDATE [dbo].[Tbl_Wallet]
+   SET [WalletUserName] = @WalletUserName
+      ,[FullName] = @FullName
+ WHERE WalletId = @WalletId";
+            using IDbConnection connection = new SqlConnection(_connection.ConnectionString);
+            connection.Open();
+            var res = await connection.ExecuteAsync(query, requestmodel);
+            connection.Close();
+            if(res > 0)
+            {
+                return Json(new { isSuccess = true, message = "Update Complete" });
+            }
+            return Json(new { isSuccess = false, message = "Update Fail" });
+        }
     }
 
     public class WalletModel
