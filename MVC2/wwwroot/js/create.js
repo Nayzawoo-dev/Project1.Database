@@ -1,4 +1,5 @@
-﻿	$("#btnSave").click(function(){
+﻿
+$("#btnSave").click(function () {
 		let item = {
 	WalletUserName: $("#txtwalletUsername").val(),
 	FullName: $("#txtfullName").val(),
@@ -8,7 +9,7 @@
 		url:"/Wallet/Save",
 	type:"POST",
 	data:{requestModel:item},
-	success:function(response){
+		success: function (response) {
 					   // console.log({response});
 					   if(!response.isSuccess){
 		alert(response.message);
